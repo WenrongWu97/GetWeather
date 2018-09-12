@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用AJAX写的天气查询</title>
+</head>
+<body>
+    <span>请用中文输入想要查询的城市：<input id="city" type="text" name="city"></span>
+    <button type="submit" onclick="getWeather()">点击查询</button>
+    <p id="weatherInfo"></p>
+
+    <script type="text/javascript">
+        function getWeather() {
+            //API地址：https://blog.csdn.net/c_chao/article/details/78573737
+            let url = "https://www.apiopen.top/weatherApi?city=";
+            //获取想要查询的城市
+            let city = document.getElementById("city");
+            let newUrl = url + city.value;
+            console.log(newUrl);
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState === 4) {
+                    if(xhr.status === 200) {
+                        return success(xhr.responseText);
+                    } else {
+                        alert("查询失败，请重试");
+                    }
+                }
+            }
+            xhr.open("GET", newUrl);
+            xhr.send();
+        }
+        function success(data) {
+            let weather = document.getElementById("weatherInfo");
+            let weatherInfo = JSON.parse(data);
+            if(weatherInfo.code === 200) {
+                weather.innerHTML = "查询成功" + "<br>" +
+                "当前城市：" + weatherInfo.data.city + "<br>" +
+                "当前温度：" + weatherInfo.data.wendu + "<br>" +
+                "气温：" + "最" + weatherInfo.data.forecast[0].high + ",最" + weatherInfo.data.forecast[0].low + "<br>" +
+                "天气：" + weatherInfo.data.forecast[0].type + "<br>" +
+                "风向：" + weatherInfo.data.forecast[0].fengxiang + "<br>" +
+                // "风力：" + weatherInfo.data.forecast[0].fengli + "<br>" +
+                "注意：" + weatherInfo.data.ganmao
+            } else {
+                weather.innerText = weatherInfo.msg;
+            }
+        }
+    </script>
+</body>
+</html>
